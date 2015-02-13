@@ -1,16 +1,26 @@
 var gantt = require('../');
-var createElement = require('virtual-dom/create-element');
+var g = gantt({});
 
-var g = gantt({
-});
 g.add('wow', {
     dependencies: [ 'amaze' ],
-    estimate: '1 week'
+    duration: '1 week'
 });
 g.add('amaze', {
-    estimate: '3 days'
+    duration: '3 days'
 });
 g.add('cool', {
-    estimate: '6 days'
+    duration: '6 days'
+});
+g.add('whatever', {
+    duration: '1 day',
+    dependencies: [ 'wow' ]
+});
+g.add('very', {
+    duration: '2 days',
+    dependencies: [ 'amaze' ]
+});
+g.add('great', {
+    duration: '8 days',
+    dependencies: [ 'very' ]
 });
 module.exports = g;
