@@ -1,6 +1,3 @@
-var gantt = require('../');
+var chart = require('./chart.js');
 var createElement = require('virtual-dom/create-element');
-
-var g = gantt({
-});
-document.body.appendChild(createElement(g.tree));
+document.body.appendChild(createElement(chart.tree()));
