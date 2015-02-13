@@ -28,11 +28,11 @@ Gantt.prototype.tree = function () {
     })).reverse().slice(1);
     var mspx = parsedur('1 month') / 1000;
     
-    var time = 0;
     var rects = tsort.map(function (key, ix) {
         var t = self.tasks[key];
+        
+        var time = deptime(t, 0);
         var ms = parsedur(t.estimate);
-        time += ms;
         
         return h('rect', {
             fill: 'yellow',
@@ -44,4 +44,14 @@ Gantt.prototype.tree = function () {
     });
     
     return h('svg', { width: '100%', height: '100%' }, rects);
+    
+    function deptime (t, time) {
+        var deps = t.dependencies || [];
+        var max = time;
+        for (var i = 0; i < deps.length; i++) {
+            var dt = deptime(self.tasks[deps[i]], time);
+            if (dt > max) max = dt;
+        }
+        return max + parsedur(t.estimate);
+    }
 };
