@@ -6,10 +6,14 @@ var parsedur = require('parse-duration');
 
 module.exports = Gantt;
 
-function Gantt (opts) {
-    if (!(this instanceof Gantt)) return new Gantt(opts);
-    if (!opts) opts = {};
-    this.tasks = defined(opts.tasks, {});
+function Gantt (tasks) {
+    if (!(this instanceof Gantt)) return new Gantt(tasks);
+    var self = this;
+    
+    this.tasks = defined(tasks, {});
+    Object.keys(this.tasks).forEach(function (key) {
+        self.tasks[key].name = key;
+    });
     this.unnamed = 0;
     this.mspx = parsedur('1 month') / 1000;
 }
