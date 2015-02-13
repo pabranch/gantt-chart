@@ -11,43 +11,62 @@ function Gantt (opts) {
     if (!opts) opts = {};
     this.tasks = defined(opts.tasks, {});
     this.unnamed = 0;
+    this.mspx = parsedur('1 month') / 1000;
 }
 
 Gantt.prototype.add = function (name, t) {
+    t.name = name;
     this.tasks[name] = t;
 };
 
-Gantt.prototype.tree = function () {
+Gantt.prototype.sort = function () {
     var self = this;
-    var tsort = toposort(concat(Object.keys(self.tasks), function (key) {
+    return toposort(concat(Object.keys(self.tasks), function (key) {
         var t = self.tasks[key];
         if (!t.dependencies || t.dependencies.length === 0) {
             return [ [ key, '__END__' ] ];
         }
         return t.dependencies.map(function (d) { return [ key, d ] });
-    })).reverse().slice(1);
-    var mspx = parsedur('1 month') / 1000;
-    
+    })).reverse().slice(1).map(tof);
+    function tof (key) { return self.tasks[key] }
+};
+
+Gantt.prototype.deptime = function (t, time) {
+    var deps = t.dependencies || [];
+    var max = time;
+    for (var i = 0; i < deps.length; i++) {
+        var dt = this.deptime(this.tasks[deps[i]], time);
+        if (dt > max) max = dt;
+    }
+    return max + parsedur(t.duration);
+};
+
+Gantt.prototype.coords = function (sorted) {
+    var self = this;
     var coords = {};
-    tsort.forEach(function (key, ix) {
-        var t = self.tasks[key];
-        
-        var time = deptime(t, 0);
+    sorted.forEach(function (t, ix) {
+        var time = self.deptime(t, 0);
         var ms = parsedur(t.duration);
         
-        var x1 = time / mspx;
-        var x0 = x1 - ms / mspx + 5;
+        var x1 = time / self.mspx;
+        var x0 = x1 - ms / self.mspx + 5;
         var y0 = (50 + 5) * ix;
         var y1 = y0 + 50;
-        coords[key] = [ x0, y0, x1, y1 ];
+        coords[t.name] = [ x0, y0, x1, y1 ];
     });
+    return coords;
+};
+
+Gantt.prototype.tree = function () {
+    var self = this;
+    var sorted = self.sort();
+    var coords = self.coords(sorted);
     
-    var groups = tsort.reverse().map(function (key, rix) {
-        var ix = tsort.length - rix - 1;
-        var t = self.tasks[key];
-        var c = coords[key];
+    var groups = sorted.reverse().map(function (t, rix) {
+        var ix = sorted.length - rix - 1;
+        var c = coords[t.name];
         
-        var time = deptime(t, 0);
+        var time = self.deptime(t, 0);
         var ms = parsedur(t.duration);
         
         var x0 = 0, x1 = c[2] - c[0];
@@ -80,7 +99,7 @@ Gantt.prototype.tree = function () {
             x: 5, y: (y1 - y0 + 20 / 2) / 2,
             fontSize: 20,
             fill: 'blue'
-        }, key));
+        }, t.name));
         
         if (t.dependencies && t.dependencies.length) {
             children.push(h('polyline', {
@@ -100,14 +119,4 @@ Gantt.prototype.tree = function () {
     });
     
     return h('svg', { width: '100%', height: '100%' }, groups);
-    
-    function deptime (t, time) {
-        var deps = t.dependencies || [];
-        var max = time;
-        for (var i = 0; i < deps.length; i++) {
-            var dt = deptime(self.tasks[deps[i]], time);
-            if (dt > max) max = dt;
-        }
-        return max + parsedur(t.duration);
-    }
 };
