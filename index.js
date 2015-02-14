@@ -23,6 +23,10 @@ Gantt.prototype.add = function (name, t) {
     this.tasks[name] = t;
 };
 
+Gantt.prototype.remove = function (name) {
+    delete this.tasks[name];
+};
+
 Gantt.prototype.sort = function () {
     var self = this;
     return toposort(concat(Object.keys(self.tasks), function (key) {
