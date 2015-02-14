@@ -5,15 +5,15 @@ var fs = require('fs');
 var path = require('path');
 
 var chart = require('./chart.js');
-var cssfile = require.resolve('../index.css');
 var ecstatic = require('ecstatic')(__dirname + '/static');
 
 var server = http.createServer(function (req, res) {
-    return ecstatic(req, res);
-    read('static/index.html').pipe(hyperstream({
-        'style': read(cssfile),
-        '#chart': str(chart.tree())
-    })).pipe(res);
+    if (req.url === '/') {
+        read('static/index.html').pipe(hyperstream({
+            '#chart': str(chart.tree())
+        })).pipe(res);
+    }
+    else ecstatic(req, res);
 });
 server.listen(5000);
 
