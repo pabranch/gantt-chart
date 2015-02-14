@@ -4,6 +4,8 @@ generate an svg gantt chart in node and the browser
 
 # example
 
+[View this example on htmlbin](https://bffb58cbadd8ffccf22421f883769b1b8b3b31e5.htmlb.in).
+
 export some task data in `chart.json`:
 
 ``` js
