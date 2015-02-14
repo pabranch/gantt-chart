@@ -79,9 +79,15 @@ If a task called `name` already exists, the existing task will be overwritten.
 
 Remove a task by its `name`.
 
-## var tree = g.tree()
+## var tree = g.tree(opts)
 
 Return a [virtual-dom](https://npmjs.org/package/virtual-dom) `tree`.
+
+Optionally set attributes on the svg primitives with:
+
+* `opts.rect`
+* `opts.text` 
+* `opts.arrow`
 
 ## var sorted = g.sort()
 
