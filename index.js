@@ -4,6 +4,7 @@ var concat = require('concat-map');
 var toposort = require('toposort');
 var parsedur = require('parse-duration');
 var copy = require('shallow-copy');
+var xtend = require('xtend');
 
 module.exports = Gantt;
 
@@ -66,8 +67,10 @@ Gantt.prototype.coords = function (sorted) {
     return coords;
 };
 
-Gantt.prototype.tree = function () {
+Gantt.prototype.tree = function (opts) {
     var self = this;
+    if (!opts) opts = {};
+    
     var sorted = self.sort();
     var coords = self.coords(sorted);
     
@@ -98,29 +101,29 @@ Gantt.prototype.tree = function () {
         ];
         
         var children = [];
-        children.push(h('rect', {
-            fill: 'yellow',
+        children.push(h('rect', xtend(opts.rect, {
+            fill: '#ddd',
             x: x0, y: y0,
             width: x1 - x0,
             height: y1 - y0
-        }));
-        children.push(h('text', {
+        })));
+        children.push(h('text', xtend(opts.text, {
             x: 5, y: (y1 - y0 + 20 / 2) / 2,
             fontSize: 20,
-            fill: 'blue'
-        }, t.name));
+            fill: 'purple'
+        }), t.name));
         
         if (t.dependencies && t.dependencies.length) {
-            children.push(h('polyline', {
+            children.push(h('polyline', xtend(opts.arrow, {
                 stroke: 'purple',
                 strokeWidth: 3,
                 fill: 'transparent',
                 points: arrowline.join(' ')
-            }));
-            children.push(h('polygon', {
+            })));
+            children.push(h('polygon', xtend(opts.arrow, {
                 fill: 'purple',
                 points: arrowhead.join(' ')
-            }));
+            })));
         }
         return h('g', {
             transform: 'translate(' + c[0] + ',' + c[1] + ')'
