@@ -1,7 +1,7 @@
 var createElement = require('virtual-dom/create-element');
 var diff = require('virtual-dom/diff');
 var patch = require('virtual-dom/patch');
-var gantt = require('../');
+var gantt = require('../../');
 
 var elem = document.querySelector('#chart svg');
 var txt = document.querySelector('textarea');

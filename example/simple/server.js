@@ -4,16 +4,14 @@ var hyperstream = require('hyperstream');
 var fs = require('fs');
 var path = require('path');
 
-var gantt = require('../');
-var chart = require('./chart.json');
-var g = gantt(chart);
+var gantt = require('../../');
+var g = gantt(require('./chart.json'));
 var ecstatic = require('ecstatic')(__dirname + '/static');
 
 var server = http.createServer(function (req, res) {
     if (req.url === '/') {
         read('static/index.html').pipe(hyperstream({
             '#chart': str(g.tree()),
-            '#code': JSON.stringify(chart, null, 2)
         })).pipe(res);
     }
     else ecstatic(req, res);

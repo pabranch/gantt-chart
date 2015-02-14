@@ -4,53 +4,53 @@ generate an svg gantt chart in node and the browser
 
 # example
 
-export some tasks and dependencies in `chart.js`:
+export some task data in `chart.json`:
 
 ``` js
-var gantt = require('gantt-chart');
-var g = gantt({
-    wow: {
-        dependencies: [ 'amaze' ],
-        duration: '1 week'
+{
+    "wow": {
+        "dependencies": [ "amaze" ],
+        "duration": "1 week"
     },
-    amaze: {
-        duration: '3 days'
+    "amaze": {
+        "duration": "3 days"
     },
-    cool: {
-        duration: '6 days'
+    "cool": {
+        "duration": "6 days"
     },
-    whatever: {
-        duration: '1 day',
-        dependencies: [ 'wow' ]
+    "whatever": {
+        "duration": "1 day",
+        "dependencies": [ "wow" ]
     },
-    very: {
-        duration: '2 days',
-        dependencies: [ 'amaze' ]
+    "very": {
+        "duration": "2 days",
+        "dependencies": [ "amaze" ]
     },
-    great: {
-        duration: '8 days',
-        dependencies: [ 'very' ]
+    "great": {
+        "duration": "8 days",
+        "dependencies": [ "very" ]
     }
-});
-module.exports = g;
+}
 ```
 
 then you can render the chart to a string for the server:
 
 ``` js
 var str = require('virtual-dom-stringify');
-var chart = require('./chart.js');
-console.log(str(chart.tree()));
+var gantt = require('gantt-chart');
+var g = gantt(require('./chart.json'));
+console.log(str(g.tree()));
 ```
 
 or to the dom in the browser:
 
 ``` js
-var chart = require('./chart.js');
 var createElement = require('virtual-dom/create-element');
+var gantt = require('gantt-chart');
+var g = gantt(require('./chart.json'));
 
 var elem = document.querySelector('#chart');
-elem.appendChild(createElement(chart.tree()));
+elem.appendChild(createElement(g.tree()));
 ```
 
 # methods
