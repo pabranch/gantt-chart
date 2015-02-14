@@ -3,6 +3,7 @@ var defined = require('defined');
 var concat = require('concat-map');
 var toposort = require('toposort');
 var parsedur = require('parse-duration');
+var copy = require('shallow-copy');
 
 module.exports = Gantt;
 
@@ -10,12 +11,12 @@ function Gantt (tasks) {
     if (!(this instanceof Gantt)) return new Gantt(tasks);
     var self = this;
     
-    this.tasks = defined(tasks, {});
-    Object.keys(this.tasks).forEach(function (key) {
-        self.tasks[key].name = key;
-    });
+    this.tasks = {};
     this.unnamed = 0;
     this.mspx = parsedur('1 month') / 1000;
+    Object.keys(tasks || {}).forEach(function (key) {
+        self.add(key, copy(tasks[key]));
+    });
 }
 
 Gantt.prototype.add = function (name, t) {
