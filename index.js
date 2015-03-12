@@ -42,19 +42,21 @@ Gantt.prototype.sort = function () {
 };
 
 Gantt.prototype.deptime = function (t, time) {
+    if (!t) return 0;
     var deps = t.dependencies || [];
     var max = time;
     for (var i = 0; i < deps.length; i++) {
         var dt = this.deptime(this.tasks[deps[i]], time);
         if (dt > max) max = dt;
     }
-    return max + parsedur(t.duration);
+    return max + parsedur(t.duration || '');
 };
 
 Gantt.prototype.coords = function (sorted) {
     var self = this;
     var coords = {};
     sorted.forEach(function (t, ix) {
+        if (!t) return;
         var time = self.deptime(t, 0);
         var ms = parsedur(t.duration);
         
@@ -75,6 +77,7 @@ Gantt.prototype.tree = function (opts) {
     var coords = self.coords(sorted);
     
     var groups = sorted.reverse().map(function (t, rix) {
+        if (!t) return '';
         var ix = sorted.length - rix - 1;
         var c = coords[t.name];
         
@@ -86,6 +89,7 @@ Gantt.prototype.tree = function (opts) {
         
         var pminy = c[1];
         (t.dependencies || []).forEach(function (k) {
+            if (!coords[k]) return;
             if (coords[k][3] < pminy) pminy = coords[k][3];
         });
         
