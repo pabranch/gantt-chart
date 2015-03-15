@@ -1,6 +1,6 @@
 {
   "name": "gantt-chart",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "interactive gantt charts in node and the browser",
   "main": "index.js",
   "style": "index.css",
